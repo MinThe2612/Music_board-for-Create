@@ -1,41 +1,29 @@
-
 local gpu = peripheral.find("directgpu")
 
 if not gpu then
-    print("ERROR: Cannot find DirectGPU")
-    return
+    error("GPU not found")
 end
 
 print("GPU detected!")
 
-local monitor = gpu.autoDetectMonitor()
-print("Detected monitor:", monitor)
+sleep(0.2)
 
-local display = gpu.autoDetectAndCreateDisplay()
+local ok, displayId = pcall(function()
+    return gpu.autoDetectAndCreateDisplay()
+end)
 
-if not display then
-    print("ERROR: Cannot create display")
+if not ok then
+    print("Display error:", displayId)
     return
 end
 
-print("Display ID:", display)
+print("Display created:", displayId)
 
-local info = gpu.getDisplayInfo(display)
+local info = gpu.getDisplayInfo(displayId)
 
-print("Resolution:", info.pixelWidth, "x", info.pixelHeight)
+print("Resolution:", info.pixelWidth, info.pixelHeight)
 
-gpu.clear(display, 10, 15, 30)
-
-gpu.drawText(
-    display,
-    "DIRECTGPU CONNECTED!",
-    30, 30,
-    0, 255, 255,
-    "Arial", 24, "bold"
-)
-
-gpu.fillRect(display, 30, 80, 200, 8, 0, 220, 255)
-
-gpu.updateDisplay(display)
-
-print("Test completed!")
+gpu.clear(displayId, 0, 0, 0)
+gpu.drawText(displayId, "GPU ONLINE", 30, 30,
+    0, 255, 255, "Arial", 24, "bold")
+gpu.updateDisplay(displayId)
